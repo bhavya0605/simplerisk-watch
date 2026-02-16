@@ -7,6 +7,9 @@ const sidebarItems = [
   "Reality Analysis",
   "Comparison",
   "Reports",
+  "Scrum Master",
+  "Developer",
+  "Admin",
 ];
 
 const WireframeLayout = ({
