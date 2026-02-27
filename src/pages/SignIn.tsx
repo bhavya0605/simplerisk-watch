@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-type Role = "Admin" | "Developer" | "Scrum Master";
+type Role = "Admin";
 
 const SignIn = ({ onSignIn }: { onSignIn: (role: Role) => void }) => {
   const [selectedRole, setSelectedRole] = useState<Role>("Admin");
@@ -24,22 +24,8 @@ const SignIn = ({ onSignIn }: { onSignIn: (role: Role) => void }) => {
           </div>
 
           <div className="border-2 border-foreground p-3">
-            <div className="text-sm text-muted-foreground mb-2">Select Role</div>
-            <div className="flex gap-2 flex-wrap">
-              {(["Admin", "Developer", "Scrum Master"] as Role[]).map((role) => (
-                <button
-                  key={role}
-                  onClick={() => setSelectedRole(role)}
-                  className={`border-2 border-foreground px-3 py-1 text-sm ${
-                    selectedRole === role
-                      ? "bg-foreground text-primary-foreground"
-                      : "bg-background text-foreground"
-                  }`}
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
+          <div className="text-sm text-muted-foreground mb-2">Role</div>
+            <div className="text-sm font-bold text-foreground">Admin</div>
           </div>
 
           <button
