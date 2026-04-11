@@ -1,155 +1,153 @@
-import { WireBox } from "@/components/WireframeLayout";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line,
-  PieChart, Pie, Cell, LabelList,
-} from "recharts";
+import { useState, useEffect } from "react";
+import { GlassCard } from "@/components/WireframeLayout";
+import { fetchNewsFeed, type NewsItem } from "@/lib/api";
 
-const summaryCards = [
-  { label: "Total Products", value: "--" },
-  { label: "High Risk Products", value: "--" },
-  { label: "Avg Sentiment Score", value: "--" },
-  { label: "Mis-Selling Risk Index", value: "--" },
-];
+const CATEGORY_TABS = ["All", "Mutual Fund", "Insurance", "FD"];
 
-// Replace these with your backend data
-const sentimentData: { category: string; value: number }[] = [];
-const trendData: { month: string; score: number }[] = [];
-const comparisonData: { metric: string; promised: number; actual: number }[] = [];
-const gapScore: number | null = null;
-const gaugeData: { name: string; value: number }[] = [];
-
-const GAUGE_COLORS = ["#ef4444", "#e5e5e5"];
-
-const sentimentConfig = {
-  value: { label: "Percentage", color: "hsl(var(--foreground))" },
-};
-const trendConfig = {
-  score: { label: "Sentiment Score", color: "hsl(var(--foreground))" },
-};
-const comparisonConfig = {
-  promised: { label: "Promised", color: "hsl(var(--foreground))" },
-  actual: { label: "Actual", color: "hsl(var(--muted-foreground))" },
+const sentimentConfig: Record<string, { dot: string; label: string; cls: string }> = {
+  negative: { dot: "bg-red-500", label: "⚠ Alert", cls: "text-red-400" },
+  warning: { dot: "bg-amber-500", label: "⚡ Warning", cls: "text-amber-400" },
+  caution: { dot: "bg-yellow-500", label: "👁 Caution", cls: "text-yellow-400" },
+  positive: { dot: "bg-emerald-500", label: "✅ Positive", cls: "text-emerald-400" },
 };
 
-const NoData = () => (
-  <div className="flex items-center justify-center h-full min-h-[120px] text-sm text-muted-foreground">
-    No data available
-  </div>
-);
+const Dashboard = ({ onAnalyze }: { onAnalyze?: (news: NewsItem) => void }) => {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("All");
 
-const Dashboard = () => (
-  <div className="space-y-6">
-    <WireBox className="text-center">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-    </WireBox>
+  useEffect(() => {
+    setLoading(true);
+    fetchNewsFeed(activeTab === "All" ? undefined : activeTab)
+      .then(setNews)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [activeTab]);
 
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {summaryCards.map((card) => (
-        <WireBox key={card.label} className="text-center">
-          <div className="text-xs text-muted-foreground">{card.label}</div>
-          <div className="text-2xl font-bold mt-1">{card.value}</div>
-        </WireBox>
-      ))}
-    </div>
+  const timeAgo = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const hrs = Math.floor(diff / 3600000);
+    if (hrs < 1) return "Just now";
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  };
 
-    <WireBox label="Sentiment Breakdown (%)">
-      {sentimentData.length > 0 ? (
-        <ChartContainer config={sentimentConfig} className="h-[220px] w-full">
-          <BarChart data={sentimentData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="category" />
-            <YAxis unit="%" />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="value" fill="hsl(var(--foreground))" radius={[2, 2, 0, 0]}>
-              <LabelList dataKey="value" position="top" formatter={(v: number) => `${v}%`} />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      ) : <NoData />}
-    </WireBox>
+  return (
+    <div className="space-y-6 fade-in">
+      {/* Hero Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">Financial Market Watch</h1>
+        <p className="text-base text-[hsl(var(--muted-foreground))] mt-2">
+          Live coverage of mutual funds, insurance, and financial product news. 
+          <span className="text-[hsl(217,91%,70%)]"> Click "Analyze" on any story</span> to run AI-powered mis-selling detection.
+        </p>
+      </div>
 
-    <WireBox label="Sentiment Trend Over Time">
-      {trendData.length > 0 ? (
-        <ChartContainer config={trendConfig} className="h-[220px] w-full">
-          <LineChart data={trendData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis domain={[0, 1]} />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Line type="monotone" dataKey="score" stroke="hsl(var(--foreground))" strokeWidth={2} dot={{ r: 4 }}>
-              <LabelList dataKey="score" position="top" />
-            </Line>
-          </LineChart>
-        </ChartContainer>
-      ) : <NoData />}
-    </WireBox>
+      {/* Category Tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {CATEGORY_TABS.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === tab
+                ? "gradient-primary text-white shadow-lg shadow-blue-500/20"
+                : "bg-[hsl(var(--secondary))] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))] hover:text-foreground"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-    <WireBox label="Expectation vs Reality Comparison">
-      {comparisonData.length > 0 ? (
-        <>
-          <ChartContainer config={comparisonConfig} className="h-[240px] w-full">
-            <BarChart data={comparisonData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="metric" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="promised" fill="hsl(var(--foreground))" radius={[2, 2, 0, 0]}>
-                <LabelList dataKey="promised" position="top" />
-              </Bar>
-              <Bar dataKey="actual" fill="hsl(var(--muted-foreground))" radius={[2, 2, 0, 0]}>
-                <LabelList dataKey="actual" position="top" />
-              </Bar>
-            </BarChart>
-          </ChartContainer>
-          <div className="text-center mt-2 text-sm font-bold">
-            Gap Score: <span className="text-lg">{gapScore ?? "--"}</span>/100
-          </div>
-        </>
-      ) : <NoData />}
-    </WireBox>
-
-    <WireBox label="Mis-Selling Risk Gauge">
-      {gaugeData.length > 0 ? (
-        <div className="flex flex-col items-center">
-          <div className="h-[140px] w-[260px]">
-            <ChartContainer config={{ score: { label: "Risk", color: "#ef4444" } }} className="h-full w-full">
-              <PieChart>
-                <Pie
-                  data={gaugeData}
-                  cx="50%"
-                  cy="100%"
-                  startAngle={180}
-                  endAngle={0}
-                  innerRadius={70}
-                  outerRadius={100}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {gaugeData.map((_, i) => (
-                    <Cell key={i} fill={i === 0 ? (gaugeData[0].value > 66 ? "#ef4444" : gaugeData[0].value > 33 ? "#eab308" : "#22c55e") : GAUGE_COLORS[1]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-          </div>
-          <div className="text-3xl font-bold -mt-4">{gaugeData[0].value}/100</div>
-          <div className="text-sm text-muted-foreground">
-            Risk Level: {gaugeData[0].value > 66 ? "High" : gaugeData[0].value > 33 ? "Medium" : "Low"}
-          </div>
+      {/* Ticker Bar */}
+      <div className="glass-card p-3 flex items-center gap-3 overflow-hidden">
+        <div className="shrink-0 px-3 py-1 rounded-lg gradient-primary text-white text-xs font-bold">LIVE</div>
+        <div className="flex gap-6 text-sm text-[hsl(var(--muted-foreground))] animate-marquee whitespace-nowrap">
+          {news.slice(0, 5).map((n) => (
+            <span key={n.id} className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${sentimentConfig[n.sentiment]?.dot || 'bg-gray-500'}`} />
+              <span className="truncate max-w-[300px]">{n.headline}</span>
+            </span>
+          ))}
         </div>
-      ) : <NoData />}
-    </WireBox>
+      </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <WireBox label="Top Customer Complaints">
-        <div className="text-sm text-muted-foreground text-center py-4">No complaints loaded</div>
-      </WireBox>
-      <WireBox label="Alerts">
-        <div className="text-sm text-muted-foreground text-center py-4">No alerts</div>
-      </WireBox>
+      {loading && (
+        <div className="text-center py-12 text-[hsl(var(--muted-foreground))]">Loading market intelligence...</div>
+      )}
+
+      {/* News Cards */}
+      <div className="space-y-4">
+        {news.map((item) => {
+          const sent = sentimentConfig[item.sentiment] || sentimentConfig.positive;
+
+          return (
+            <div key={item.id} className="glass-card p-6 group hover:border-[hsl(217,91%,60%,0.3)] transition-all">
+              {/* Top row: source, time, sentiment */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xs font-semibold text-[hsl(217,91%,70%)] bg-[hsl(217,91%,60%,0.1)] px-3 py-1 rounded-full">
+                  {item.source}
+                </span>
+                <span className="text-xs text-[hsl(var(--muted-foreground))]">{timeAgo(item.published_at)}</span>
+                <span className={`text-xs font-semibold ${sent.cls}`}>{sent.label}</span>
+                <span className="badge badge-minor ml-auto">{item.category}</span>
+              </div>
+
+              {/* Headline */}
+              <h2 className="text-xl font-bold text-foreground leading-snug mb-3 group-hover:text-[hsl(217,91%,70%)] transition-colors">
+                {item.headline}
+              </h2>
+
+              {/* Summary */}
+              <p className="text-base text-[hsl(var(--muted-foreground))] leading-relaxed mb-4">
+                {item.summary}
+              </p>
+
+              {/* Tags */}
+              <div className="flex items-center gap-2 flex-wrap mb-4">
+                {item.tags.map((tag) => (
+                  <span key={tag} className="text-xs px-2.5 py-1 rounded-lg bg-[hsl(var(--secondary))] text-[hsl(var(--muted-foreground))]">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Relevance + Analyze CTA */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Relevance: <span className="font-bold text-foreground">{item.relevance_score}%</span>
+                  </div>
+                  <div className="w-24 h-1.5 rounded-full bg-[hsl(var(--muted))] overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${item.relevance_score}%`,
+                        background: item.relevance_score > 85 ? 'hsl(0,72%,51%)' : item.relevance_score > 70 ? 'hsl(38,92%,50%)' : 'hsl(152,69%,45%)',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onAnalyze?.(item)}
+                  className="px-6 py-2.5 rounded-xl gradient-primary text-white text-sm font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all flex items-center gap-2"
+                >
+                  🔍 Analyze This
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Context menu hint */}
+      <div className="text-center text-sm text-[hsl(var(--muted-foreground))] opacity-60">
+        💡 Tip: You can also right-click any news card for quick actions
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Dashboard;

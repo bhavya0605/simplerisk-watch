@@ -1,13 +1,13 @@
-import { useState, ReactNode } from "react";
+import { ReactNode } from "react";
 
 const sidebarItems = [
-  "Dashboard",
-  "Product Upload",
-  "Expectation Analysis",
-  "Reality Analysis",
-  "Comparison",
-  "Reports",
-  "Admin",
+  { name: "Dashboard", icon: "📊" },
+  { name: "Product Upload", icon: "📄" },
+  { name: "Expectation Analysis", icon: "🔍" },
+  { name: "Reality Analysis", icon: "📈" },
+  { name: "Comparison", icon: "⚖️" },
+  { name: "Reports", icon: "📋" },
+  { name: "Admin", icon: "⚙️" },
 ];
 
 const WireframeLayout = ({
@@ -23,48 +23,73 @@ const WireframeLayout = ({
 }) => {
   return (
     <div className="min-h-screen flex bg-background">
-      <aside className="w-48 border-r-2 border-foreground p-2 flex flex-col gap-1 shrink-0">
-        <div className="border-2 border-foreground p-2 mb-2 text-center font-bold text-sm">
-          Menu
+      {/* Sidebar */}
+      <aside className="w-56 border-r border-border bg-[hsl(var(--sidebar-background))] p-3 flex flex-col gap-1 shrink-0">
+        <div className="px-3 py-4 mb-2">
+          <div className="text-xs font-bold tracking-widest uppercase text-[hsl(var(--muted-foreground))]">
+            SimpleRisk
+          </div>
+          <div className="text-lg font-bold gradient-text mt-0.5">
+            Watch
+          </div>
         </div>
+
+        <div className="section-label px-3 mb-1">Navigation</div>
+
         {sidebarItems.map((item) => (
           <button
-            key={item}
-            onClick={() => onNavigate(item)}
-            className={`border-2 border-foreground p-2 text-left text-sm w-full ${
-              active === item
-                ? "bg-foreground text-primary-foreground"
-                : "bg-background text-foreground"
+            key={item.name}
+            onClick={() => onNavigate(item.name)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium w-full text-left transition-all duration-200 ${
+              active === item.name
+                ? "bg-[hsl(217,91%,60%,0.15)] text-[hsl(217,91%,70%)] shadow-sm"
+                : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-foreground"
             }`}
           >
-            {item}
+            <span className="text-base">{item.icon}</span>
+            <span>{item.name}</span>
           </button>
         ))}
-        <button
-          onClick={onSignOut}
-          className="border-2 border-foreground p-2 text-left text-sm mt-auto text-muted-foreground"
-        >
-          Sign Out
-        </button>
+
+        <div className="mt-auto pt-4 border-t border-border">
+          <button
+            onClick={onSignOut}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-foreground w-full text-left transition-all"
+          >
+            <span>🚪</span>
+            <span>Sign Out</span>
+          </button>
+        </div>
       </aside>
+
+      {/* Main Content */}
       <main className="flex-1 p-6 space-y-6 overflow-auto">{children}</main>
     </div>
   );
 };
 
-export const WireBox = ({
+export const GlassCard = ({
   label,
   children,
   className = "",
+  accent,
+  style,
 }: {
   label?: string;
   children?: ReactNode;
   className?: string;
+  accent?: "blue" | "purple" | "green" | "red" | "amber";
+  style?: React.CSSProperties;
 }) => (
-  <div className={`border-2 border-foreground p-4 ${className}`}>
-    {label && <div className="font-bold text-foreground mb-2">{label}</div>}
+  <div className={`glass-card p-5 ${accent ? `metric-card ${accent}` : ""} ${className}`} style={style}>
+    {label && (
+      <div className="section-label mb-3">{label}</div>
+    )}
     {children}
   </div>
 );
+
+// Keep WireBox as alias for backward compat
+export const WireBox = GlassCard;
 
 export default WireframeLayout;

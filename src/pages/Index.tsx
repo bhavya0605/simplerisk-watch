@@ -7,34 +7,32 @@ import ExpectationAnalysis from "./ExpectationAnalysis";
 import RealityAnalysis from "./RealityAnalysis";
 import Comparison from "./Comparison";
 import Reports from "./Reports";
-import ScrumMaster from "./ScrumMaster";
-import Developer from "./Developer";
-import Admin from "./Admin";
+import AnalyzePage from "./AnalyzePage";
+import { type NewsItem } from "@/lib/api";
+import { ProductProvider } from "@/hooks/useProduct";
 
-type Role = "Admin" | "Developer" | "Scrum Master";
+type Role = "Admin" | "Analyst" | "Viewer";
 
-const pages: Record<string, React.FC> = {
+const pages: Record<string, React.FC<any>> = {
   Dashboard,
   "Product Upload": ProductUpload,
   "Expectation Analysis": ExpectationAnalysis,
   "Reality Analysis": RealityAnalysis,
   Comparison,
   Reports,
-  "Scrum Master": ScrumMaster,
-  Developer,
-  Admin,
 };
 
 const roleDefaultPage: Record<Role, string> = {
-  Admin: "Admin",
-  Developer: "Developer",
-  "Scrum Master": "Scrum Master",
+  Admin: "Dashboard",
+  Analyst: "Dashboard",
+  Viewer: "Dashboard",
 };
 
 const Index = () => {
   const [signedIn, setSignedIn] = useState(false);
   const [role, setRole] = useState<Role>("Admin");
   const [activePage, setActivePage] = useState("Dashboard");
+  const [analyzingNews, setAnalyzingNews] = useState<NewsItem | null>(null);
 
   if (!signedIn) {
     return (
@@ -50,14 +48,40 @@ const Index = () => {
 
   const PageComponent = pages[activePage] || Dashboard;
 
+  let content = <PageComponent />;
+  
+  if (activePage === "Dashboard") {
+    content = (
+      <Dashboard 
+        onAnalyze={(news) => { 
+          setAnalyzingNews(news); 
+          setActivePage("Analyze"); 
+        }} 
+      />
+    );
+  } else if (activePage === "Product Upload") {
+    content = <ProductUpload onUploadComplete={() => setActivePage("Reports")} />;
+  } else if (activePage === "Analyze") {
+    content = analyzingNews ? (
+      <AnalyzePage 
+        newsItem={analyzingNews} 
+        onBack={() => setActivePage("Dashboard")} 
+      />
+    ) : (
+      <Dashboard />
+    );
+  }
+
   return (
-    <WireframeLayout
-      active={activePage}
-      onNavigate={setActivePage}
-      onSignOut={() => setSignedIn(false)}
-    >
-      <PageComponent />
-    </WireframeLayout>
+    <ProductProvider>
+      <WireframeLayout
+        active={activePage === "Analyze" ? "Dashboard" : activePage}
+        onNavigate={setActivePage}
+        onSignOut={() => setSignedIn(false)}
+      >
+        {content}
+      </WireframeLayout>
+    </ProductProvider>
   );
 };
 

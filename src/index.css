@@ -1,39 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
-
 @layer base {
   :root {
-    --background: 0 0% 97%;
-    --foreground: 0 0% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 0 0% 10%;
-    --primary-foreground: 0 0% 97%;
-    --secondary: 0 0% 90%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 93%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 0 0% 90%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 0% 30%;
-    --destructive-foreground: 0 0% 97%;
-    --border: 0 0% 10%;
-    --input: 0 0% 10%;
-    --ring: 0 0% 10%;
-    --radius: 0px;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 10%;
-    --sidebar-primary: 0 0% 10%;
-    --sidebar-primary-foreground: 0 0% 97%;
-    --sidebar-accent: 0 0% 93%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 0 0% 10%;
-    --sidebar-ring: 0 0% 10%;
+    --background: 222 47% 6%;
+    --foreground: 210 20% 92%;
+    --card: 222 40% 10%;
+    --card-foreground: 210 20% 92%;
+    --popover: 222 40% 10%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 35% 16%;
+    --secondary-foreground: 210 20% 85%;
+    --muted: 222 30% 14%;
+    --muted-foreground: 215 15% 55%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 25% 18%;
+    --input: 222 25% 18%;
+    --ring: 217 91% 60%;
+    --radius: 12px;
+    --sidebar-background: 222 45% 8%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 35% 14%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 222 25% 16%;
+    --sidebar-ring: 217 91% 60%;
+
+    /* custom tokens */
+    --success: 152 69% 45%;
+    --warning: 38 92% 50%;
+    --danger: 0 72% 51%;
+    --info: 199 89% 48%;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --glow-primary: rgba(59,130,246,0.15);
+    --glow-accent: rgba(139,92,246,0.12);
   }
 }
 
@@ -42,7 +52,155 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Architects Daughter', cursive;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.6;
   }
+}
+
+/* ─── Glass Card ────────────────────────────────── */
+.glass-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+.glass-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+/* ─── Gradient Accents ──────────────────────────── */
+.gradient-primary {
+  background: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
+}
+.gradient-success {
+  background: linear-gradient(135deg, hsl(152 69% 45%), hsl(166 72% 44%));
+}
+.gradient-warning {
+  background: linear-gradient(135deg, hsl(38 92% 50%), hsl(25 95% 53%));
+}
+.gradient-danger {
+  background: linear-gradient(135deg, hsl(0 72% 51%), hsl(350 80% 50%));
+}
+.gradient-text {
+  background: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Severity Badges ───────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.badge-safe { background: hsla(152,69%,45%,0.15); color: hsl(152,69%,55%); }
+.badge-monitor { background: hsla(38,92%,50%,0.15); color: hsl(38,92%,60%); }
+.badge-high-risk { background: hsla(0,72%,51%,0.15); color: hsl(0,72%,65%); }
+.badge-minor { background: hsla(199,89%,48%,0.12); color: hsl(199,89%,60%); }
+.badge-moderate { background: hsla(38,92%,50%,0.15); color: hsl(38,92%,60%); }
+.badge-severe { background: hsla(0,72%,51%,0.15); color: hsl(0,72%,65%); }
+
+/* ─── Insight Panels ────────────────────────────── */
+.insight-panel {
+  border-left: 3px solid hsl(217 91% 60%);
+  padding: 16px 20px;
+  background: hsla(217,91%,60%,0.05);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.insight-panel.warning {
+  border-left-color: hsl(38 92% 50%);
+  background: hsla(38,92%,50%,0.05);
+}
+.insight-panel.danger {
+  border-left-color: hsl(0 72% 51%);
+  background: hsla(0,72%,51%,0.05);
+}
+.insight-panel.success {
+  border-left-color: hsl(152 69% 45%);
+  background: hsla(152,69%,45%,0.05);
+}
+
+/* ─── Section Labels ────────────────────────────── */
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+/* ─── Metric Cards ──────────────────────────────── */
+.metric-card {
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.metric-card.blue::before { background: linear-gradient(90deg, hsl(217 91% 60%), hsl(199 89% 48%)); }
+.metric-card.purple::before { background: linear-gradient(90deg, hsl(262 83% 58%), hsl(280 75% 55%)); }
+.metric-card.green::before { background: linear-gradient(90deg, hsl(152 69% 45%), hsl(166 72% 44%)); }
+.metric-card.red::before { background: linear-gradient(90deg, hsl(0 72% 51%), hsl(350 80% 50%)); }
+.metric-card.amber::before { background: linear-gradient(90deg, hsl(38 92% 50%), hsl(25 95% 53%)); }
+
+/* ─── Weight Bar ────────────────────────────────── */
+.weight-bar {
+  height: 8px;
+  border-radius: 100px;
+  background: hsl(var(--muted));
+  overflow: hidden;
+}
+.weight-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 1s ease-out;
+}
+
+/* ─── Pulse dot ─────────────────────────────────── */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+/* ─── Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* ─── Fade-in animation ─────────────────────────── */
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
