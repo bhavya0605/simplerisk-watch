@@ -36,19 +36,24 @@ npm i
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Ways to Edit the Repository
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Edit Directly on GitHub
 
-**Use GitHub Codespaces**
+* Navigate to the file you want to modify.
+* Click the **Edit** (pencil) icon in the top-right corner.
+* Make your changes in the browser.
+* Add a commit message and commit the changes.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Use GitHub Codespaces
+
+* Open the repository's main page.
+* Click the **Code** button.
+* Select the **Codespaces** tab.
+* Click **New Codespace** to launch a cloud-based development environment.
+* Edit files directly in the Codespace.
+* Commit and push your changes when finished.
+
 
 ## What technologies are used for this project?
 
